@@ -1,7 +1,5 @@
-var calc = {
-    
-};
-
+var calc = { };
+//객체 선언 var object_name = { 중괄호 }; 
 calc.add = function(a, b){
   return a+b;  
 };
