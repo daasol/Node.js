@@ -1,0 +1,11 @@
+{
+  "name": "example_nconf",
+  "version": "1.0.0",
+  "description": "",
+  "main": "#1_console_int_string.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
