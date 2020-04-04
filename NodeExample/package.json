@@ -1,11 +1,15 @@
 {
-  "name": "example_nconf",
+  "name": "node_example_2",
   "version": "1.0.0",
-  "description": "",
   "main": "#1_console_int_string.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "nconf": "^0.10.0"
+  },
+  "devDependencies": {},
+  "description": ""
 }
