@@ -4,7 +4,7 @@ var mime = require('mime');
 var server = http.createServer();
 
 
-var port = 9900;
+var port = 3000;
 var host = 'localhost';
 
 server.listen(port, host, 5000, function(){
