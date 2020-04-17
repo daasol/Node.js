@@ -43,12 +43,12 @@ router.route('/process/showCookie').get(function(req, res){
     
 });
 
-app.all('*', function(req, res){
-    res.status(404).send('<h1>요청한 페이지가 존재하지 않음 </h1>');
-});
 
 
 app.use('/', router);
+app.all('*', function(req, res){
+    res.status(404).send('<h1>요청한 페이지가 존재하지 않음 </h1>');
+});
 
 
 
