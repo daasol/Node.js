@@ -22,8 +22,6 @@ app.use(expressSession({
     saveUninitialized:true
 }));
 
-app.use(cors());
-
 
 var router = express.Router();
 
