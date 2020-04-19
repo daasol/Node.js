@@ -1,0 +1,21 @@
+1. mongoDB download https://www.mongodb.com/download-center/community
+
+2. 시스템 변수 > PATH에 환경변수 추가 : C:\Program Files\MongoDB\Server\4.2\bin
+
+3. mongoDB 서버가 작동할 폴더 생성 :  /Users/USER/database/local 
+
+4. Node.js 명령 프롬프트를 열어 다음 명령어 입력, 이제 DB 서버가 돌아가고 있는 것이므로 종료하지 않는다.
+ >>--dbpath /Users/USER/database/local 
+ 
+5. 데이터베이스 연결하기 : 다른 Node.js 명령 프롬프트를 켜서 명령어를 입력하면 몽고db가 어떤 port를 사용하고 있는지 출력한다.
+ >>mongo
+
+6. DB 서버가 사용할 저장소(폴더) 지정
+ >>use local
+ 
+7. 레코드 생성해보기 : user라는 데이터베이스가 없음에도 불고하고, 자동으로 만듦과 동시에 객체 insert까지 해준다.
+ >>db.user.insert({ name : 'Daisy', age:25 })
+ 
+8. pretty() 함수를 이용해 레코드 살펴보기 
+ >>db.user.find().pretty()
+ 
