@@ -28,8 +28,6 @@ app.use(cors());
 var router = express.Router();
 
 
-
-
 var errorHandler = expressErrorHandler({
     static : {
         '404' : './public/404.html'
