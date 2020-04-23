@@ -42,7 +42,7 @@ router.route('/process/login2').post(function(req, res){
     
     var paramId = req.body.id;
     var paramPassword = req.body.password;
-    console.log('요청 파라미터 >> id :'+paramId+', pw : '+paramPassword);
+    console.log('요청 파라미터 >> id :'+paramId+', pw : '+paramPassword); 
     
     if(db){
         authUser(db, paramId, paramPassword, function(err, docs){
