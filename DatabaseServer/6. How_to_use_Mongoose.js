@@ -5,18 +5,46 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var static = require('serve-static');
-var MongoClient = require('mongodb').MongoClient;
+var mongoose = require('mongoose');
 var expressErrorHandler = require('express-error-handler');
 
 var db;
+var UserSchema;
+var UserModel;
 function connectDB(){
     var databaseUrl = 'mongodb://localhost:27017/local';
-    MongoClient.connect(databaseUrl, function(err, database){
-        if(err) throw err;
+    
+    //databse 연결부분
+    mongoose.Promise = global.Promise;
+    mongoose.connect(databaseUrl,{  
+        useNewUrlParser: true,
+        useFindAndModify: false,
+        useUnifiedTopology: true
+ });
+    db = mongoose.connection;
+    
+    //연결 확인을 event 발생으로 확인할 수 있음
+    db.on('open', function(){
+        console.log('데이터베이스에 연결됨 : '+databaseUrl);
+       
         
-        console.log('1. connectionDB database connection... :'+databaseUrl);
-        db=database.db('local');
+    //db연결 이후, schema를 정의함. 그 후, schema객체가 반환됨.
+   UserSchema =  mongoose.Schema({ 
+        id:String, name:String, password:String
+        }, {collection:'user'});
+        console.log('UserSchema 정의함');
+        
+        // 기존 collection과 방금 n정의한 schema연결
+        UserModel =  mongoose.model('user', UserSchema);
+        console.log('UserModel 정의함');
     });
+    
+    db.on('disconnected', function(){
+        console.log('데이터베이스 연결 끊어짐 ... ');
+
+    });
+    db.on('error', console.error.bind(console, 'mongoose 연결 에러'));
+
 }
 
 var app = express();
@@ -42,14 +70,14 @@ router.route('/process/login2').post(function(req, res){
     console.log('요청 파라미터 id >> '+paramId+', pw >> '+paramPassword);
     
     if(db){
-        authUser(db, paramId, paramPassword, function(){
+        authUser(db, paramId, paramPassword, function(err, docs){
             if(err){
                 console.log('에러 발생');
                 res.writeHead(200, {"Content-Type":"text/html;charset=UTF-8"});
                 res.write('<h1>에러발생</h1>');
                 res.end();
             }if(docs){
-                res.writeHead(200, {"Content-Type":'text/html;chatset'});
+                res.writeHead(200, {"Content-Type":"text/html;charset=UTF-8"});
                 res.write('<h1>사용자 로그인 성공</h1>');
                 res.write('<div><p>사용자 : '+docs[0].name+'</p></div>');
                 res.end();
@@ -111,14 +139,14 @@ app.use('/', router);
 var authUser =function(db, id, password, callback){
     console.log('authUser 호출 ....');
     
-    var user = db.collection('user');
-    user.find({"id":id, "password":password}).toArray(function(err, docs){
+    
+    UserModel.find({"id":id, "password":password}, function(err, docs){
         if(err){
             callback(err, null);
-            return;
-            
-        }if(docs.length>0){
-            console.log('일칳는 사용자 찾음');
+            return;          
+        } 
+        if(docs.length>0){
+            console.log('일치하는 사용자 찾음');
             callback(null, docs);
         }else{
             console.log('일치하는 사용자 찾지 못함');
@@ -132,22 +160,24 @@ var addUser = function(db, id, password, name, callback){
     console.log('addUser 호출 ... ');
     console.log(' id >> '+id+', password >>'+ password+', name >> '+name);
     
-    var user = db.collection('user');
-    user.insertMany([{"id":id, "password":password, "name":name}], function(err, result){
+    
+    //UserModel을 프로토타입으로 객체생성
+    var user =new UserModel({"id":id, "password":password, "name":name});
+    
+    //
+    user.save(function(err, user){
+        //저장시 에러 발생확인
         if(err){
             callback(err, null);
             return;
+            console.log('에러발생 172')
             
         }
-        if(result.insertedCount>0){
-            console.log('사용자 추가 완료 .... : '+result.insertedCount);
-            callback(null, result);
-            
-        }else{
-            console.log('추가된 레코드 없음');
-            callback(null, null);
-        }
+        console.log('사용자 데이터 추가함.');
+        callback(null, user);
+        
     });
+    
 };
 
 var errorHandler = expressErrorHandler({
