@@ -160,24 +160,74 @@ router.route('/process/addUser').post(function(req,res){
     }
 });
 
+router.route('/process/listUser').post(function(req, res){
+    console.log('/process/listeuser 라우팅 함수 호출됨 ... ');
+    
+    if(db){
+        UserModel.findAll(function(err, results){
+            if(err){
+                console.log('에러 발생');
+                res.writeHead(200, {"Content-Type":"text/html;charset=UTF-8"});
+                res.write('<h1>에러 발생</h1>');
+                res.end();
+            }
+            if(results){
+                console.log('results');
+                console.dir(results);
+                
+                res.writeHead(200, {"Content-Type":"text/html;charset=UTF-8"});
+                res.write("<h2>사용자 리스트 </h2>");
+                res.write("<div><ul>");
+                
+                for( var i = 0; i<results.length; i++){
+                    var curId =  results[i]._doc.id; 
+                    var curName =  results[i]._doc.name; 
+                    res.write('    <li> #'+i+'< : '+curId+', '+curName+' </li>');
+                    
+                }
+                res.write('</ul></div>');
+                res.end();
+            }else{
+                console.log('188 : 에러발생');
+                res.writeHead(200, {"Content-Type":'text/html;charset=UTF-8'});
+                res.write('<h1>조회된 사용자 없음</h1>');
+            }
+        });
+    }else{
+        console.log('194 : 에러발생');
+        res.writeHead(200, {"Content-Type":'text/html;charset=UTF-8'});
+        res.write('<h1>db 객체 존재 x</h1>');
+    }
+});
+
 app.use('/', router);
 
 var authUser = function(db, id, password, callback){
     console.log('authUser function 호출 ... ');
     
-    UserModel.find({"id":id, "password":password}, function(err, docs){
-       if(err){
-           callback(err, null);
-           return;
-       } if(docs.length>0){
-           console.log('일치하는 사용자 찾음');
-           callback(null, docs);
-           
-       }else{
-           console.log('일치하는 사용자 찾지 못함');
-           callback(null, null);
-       }
+    //static으로 정의한 findById(id, callback)
+    //callback함수를 정의한 부분에 function으로 함수 정의
+    UserModel.findById(id, function(err, results){
+        if(err){
+            callback(err, null);
+            return;
+        }
+        console.log('id >> %s로 검색됨... ');
+        if(results.length>0){
+            //doc에 password가 password와 일치한다면
+            if(results[0]._doc.password === password){
+                console.log('비밀번호 일치');
+                callback(null, results);
+            }else{
+                console.log('비밀번호 불일치');
+                callback(null, null);
+            }
+        }else{
+            console.log('아이디 일치하는 사용자 없음');
+            callback(null, null);
+        }
     });
+    
 };
 
 var addUser = function(db, id, password, name, callback){
