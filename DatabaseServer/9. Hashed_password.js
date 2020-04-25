@@ -1,3 +1,4 @@
+//https://fifo22.tistory.com/71
 var mongoose = require('mongoose');
 var database;
 var UserSchema;
