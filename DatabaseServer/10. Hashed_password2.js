@@ -40,14 +40,13 @@ function connectDB(){
         useFindAndModify: false,
         useUnifiedTopology: true
     });
-
     database = mongoose.connection;
     
     database.on('open', function(){
         console.log('database 연결됨  : '+databaseUrl);
         
         UserSchema = mongoose.Schema({
-            id:{type:String, index:'hased', unique:true,'default':''},
+            id:{type:String, required:'true', unique:true,'default':''},
             //hashed_passworddhk salt 값을 스키마에 선언
             hashed_password:
             {type:String, require:true, 'default':''},
@@ -61,14 +60,17 @@ function connectDB(){
             {type:Date, index:{unique:false}, 'default':Date.now()},
             updated_at:
             {type:Date, index:{unique:false}, 'default':Date.now()}
-        }, {collection:'user10'});
+        }, {collection:'user11'});
     
         console.log('UserSchema 정의함 ...');
         
-        UserSchema.virtual('password').set(function(password){
+        UserSchema
+            .virtual('password')
+            .set(function(password){
+                
             //단방향 암호화로 인해 원본 패스워드를 남겨둘 필요가 없어 _password라는 변수를 사용한다. 
                 this.salt = this.makeSalt();
-                this.hased_password = this.encryptPassword(password);
+                this.hashed_password = this.encryptPassword(password);
                 console.log('virtual password save ... >> '+this.hased_password);
         });
         
@@ -284,11 +286,11 @@ var authUser = function(database, id, password, callback){
             callback(err, null);
             return;
         }
-        console.log('id >> %s로 검색됨... ');
+        console.log('id >> %s로 검색됨... ', id);
         if(results.length>0){
             
             var user = new UserModel({id:id});
-            var authenticated = user.authenticate(password, results[0]._doc.salt, results[0]._doc.hased_password);
+            var authenticated = user.authenticate(password, results[0]._doc.salt, results[0]._doc.hashed_password);
             //사용자가 입력한 패스워드가 같은지 비교
          
             //doc에 password가 password와 일치한다면
@@ -296,6 +298,7 @@ var authUser = function(database, id, password, callback){
                 console.log('비밀번호 일치');
                 callback(null, results);
             }else{
+                console.log('hashed_password : '+results[0]._doc.hased_password)
                 console.log('비밀번호 불일치');
                 callback(null, null);
             }
