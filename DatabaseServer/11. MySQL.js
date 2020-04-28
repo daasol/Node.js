@@ -105,7 +105,7 @@ router.route('/process/addUser').post(function(req,res){
             return;
        }
        if(addedUser){
-           console.dir(addedUser);
+           //console.dir(addedUser);
            console.log('시용자 추가 성공');
            res.writeHead(200, {"Content-Type":"text/html;charset=UTF-8"});
            res.write('<h1>사용자 추가 성공</h1>');
