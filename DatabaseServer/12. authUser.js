@@ -11,7 +11,7 @@ var expressErrorHandler = require('express-error-handler');
 
 var mysql = require('mysql');
 
-//connection.connect();
+//@@@ public/addUser.html , publid/login2.html @@@
 
 //pooling 연결을 여러개 만들어놓고 여닫이로 사용함
 var pool = mysql.createPool({
