@@ -1,16 +1,22 @@
+create database test;
+
 use test;
 
 create table users 
 
-create database test;
-
 DROP TABLE users;
+
 CREATE TABLE users(
  id text,
  pw text,
  name text,
- age int,
+ age int
 );
 
+
 select * from users;
+
+
+
+
 
