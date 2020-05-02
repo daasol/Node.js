@@ -1,4 +1,4 @@
-var require = function(paht){
+var require = function(path){
     var exports = {};
     
     exports.getUser = function(){
