@@ -1,3 +1,4 @@
+//https://fifo22.tistory.com/76
 var require = function(path){
     var exports = {};
     
