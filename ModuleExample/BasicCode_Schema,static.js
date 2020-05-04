@@ -67,34 +67,23 @@ function connectDB(){
         UserSchema
             .virtual('password')
             .set(function(password){
-                
-            //단방향 암호화로 인해 원본 패스워드를 남겨둘 필요가 없어 _password라는 변수를 사용한다. 
                 this.salt = this.makeSalt();
                 this.hashed_password = this.encryptPassword(password);
                 console.log('virtual password save ... >> '+this.hased_password);
         });
-        
-            //3. 가상으로 정의한 값
-        
-        //모델 인스턴스에서 쓸 수 있는 메소드로 설정해보기
-        //plainText 가상으로 던져준 password
         UserSchema.method('encryptPassword', function(plainText, inSalt ){
             if(inSalt){
-                //샤1 알고리즘과 digest를 이용하여 암호화 하겠다.
                 return crypto.createHmac('sha1', inSalt).update(plainText).digest('hex');
             }else{
-                //Salt값이 어찌됐든 간에 암호화 알고리즘을 거친다.
                 return crypto.createHmac('sha1', this.salt).update(plainText).digest('hex');
             }
         });
-        
-         //makeSalt : 특정 값을 random하게 만들어 내는 함수
+    
         UserSchema.method('makeSalt', function(){     
             return Math.round((new Date().valueOf() * Math.random()))+'';
         });
 
         UserSchema.method('authenticate', function(plainText, inSalt, hashed_password){
-            //plainText : 입력받은 pw
             if(inSalt){
                 console.log('authenticate 호출됨 ...');
                 return this.encryptPassword(plainText, inSalt)===hashed_password;
@@ -117,12 +106,7 @@ function connectDB(){
         
         UserModel = mongoose.model('user2', UserSchema);
             console.log('UserModel 정의함 ...');
-        });
-    
-    
-
-
-       
+        });  
         
     database.on('disconnected', function(){
         console.log('database 연결 끊어짐 ...');
